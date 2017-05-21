@@ -132,5 +132,5 @@ class ConversationGetter:
 if __name__ == '__main__':
     conversation_getter = ConversationGetter()
     conversation_getter.prepare_db('twitter_conversation.db')
-    # conversation_getter.fetch_tweet_ids()
+    conversation_getter.fetch_tweet_ids()
     conversation_getter.fetch_conversations(450, 15)
