@@ -12,9 +12,15 @@ conversationsテーブルにtweetカラムとreplyカラムとして入ります
 
 整形する機能はないので学習前に加工してください。
 
+## Requirement
+twitter  
+https://github.com/sixohsix/twitter
+
 ## Usage
 edit bash profile.  
 export TWITTER_API_KEY='YOUR TWITTER API KEY'  
 export TWITTER_API_SECRET='YOUR TWITTER API SECRET'  
 export TWITTER_ACCESS_TOKEN='YOUR TWITTER ACCESS TOKEN'  
 export TWITTER_ACCESS_TOKEN_SECRET='YOUR TWITTER ACCESS TOKEN SECRET'  
+
+python conversation_getter.pyとすれば取得してくれるはずです。

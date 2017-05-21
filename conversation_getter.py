@@ -65,6 +65,7 @@ class ConversationGetter:
         counter = 0
         for conversation_id, tweet_id, in_reply_to_status_id in ids:
             counter += 2
+            # APIの制限への対応.
             if counter >= limit_num:
                 time.sleep(sleep_minute * 60)
                 print('--Wait 15 minutes--')
@@ -97,7 +98,6 @@ class ConversationGetter:
         access_secret = os.environ['TWITTER_ACCESS_TOKEN_SECRET']
 
         return OAuth(
-
             consumer_key=api_key,
             consumer_secret=api_secret,
             token=access_token,
@@ -121,4 +121,4 @@ if __name__ == '__main__':
     conversation_getter = ConversationGetter()
     conversation_getter.prepare_db('twitter_conversation.db')
     conversation_getter.fetch_tweet_ids()
-    # conversation_getter.fetch_conversations(450, 15)
+    conversation_getter.fetch_conversations(450, 15)
