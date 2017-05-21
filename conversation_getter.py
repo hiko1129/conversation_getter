@@ -64,6 +64,9 @@ class ConversationGetter:
         ids = self.c.fetchall()
         counter = 0
         for conversation_id, tweet_id, in_reply_to_status_id in ids:
+            if self.__conversation_exists(conversation_id):
+                print('skip. this conversation is already exists.')
+                continue
             counter += 2
             # APIの制限への対応.
             if counter >= limit_num:
@@ -89,6 +92,14 @@ class ConversationGetter:
                 print('skip this conversation')
                 continue
         self.conn.close()
+
+    def __conversation_exists(self, conversation_id):
+        """既に取得した会話か否かを判断."""
+        self.c.execute(
+            'SELECT COUNT(*) FROM conversations WHERE conversation_id=?',
+            (conversation_id,)
+        )
+        return self.c.fetchone()[0] == 1
 
     def __setting_oauth(self):
         """OAuthのための設定を行う."""
