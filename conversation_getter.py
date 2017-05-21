@@ -88,6 +88,10 @@ class ConversationGetter:
                 self.conn.commit()
             except TwitterHTTPError as err:
                 print('skip this conversation')
+                self.c.execute(
+                    'DELETE FROM tweet_ids WHERE conversation_id=?',
+                    (conversation_id,)
+                )
                 continue
             except sqlite3.IntegrityError as err:
                 print('skip this conversation')
