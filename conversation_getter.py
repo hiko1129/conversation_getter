@@ -1,12 +1,32 @@
+#!/usr/bin/env python
 from twitter import OAuth, OAuth2, oauth2_dance
 from twitter import Twitter, TwitterStream, TwitterHTTPError
 import os
 import sqlite3
 import time
+import logging
+
+
+class Logger:
+    """ログを担当."""
+
+    def __init__(self):
+        logging.basicConfig(filename='error.log', level=logging.DEBUG)
+        self.logger = logging.getLogger(__name__)
+        handler = logging.StreamHandler()
+        handler.setLevel(logging.DEBUG)
+        self.logger.setLevel(logging.DEBUG)
+        self.logger.addHandler(handler)
+
+    def debug(self, text):
+        self.logger.debug(text)
 
 
 class ConversationGetter:
     """ツイッター上での会話を取得する."""
+
+    def __init__(self):
+        self.logger = Logger()
 
     def prepare_db(self, db_name):
         """DBの準備."""
@@ -18,7 +38,8 @@ class ConversationGetter:
             CREATE TABLE tweet_ids (
                 conversation_id INTEGER PRIMARY KEY AUTOINCREMENT,
                 tweet_id TEXT,
-                in_reply_to_status_id TEXT
+                in_reply_to_status_id TEXT,
+                UNIQUE (tweet_id, in_reply_to_status_id)
             )
             '''
             self.c.execute(query)
@@ -28,7 +49,8 @@ class ConversationGetter:
                 tweet TEXT,
                 reply TEXT,
                 FOREIGN KEY (conversation_id)
-                REFERENCES tweet_ids(conversation_id)
+                REFERENCES tweet_ids(conversation_id),
+                UNIQUE (tweet, reply)
             )
             '''
             self.c.execute(query)
@@ -92,8 +114,11 @@ class ConversationGetter:
                     'DELETE FROM tweet_ids WHERE conversation_id=?',
                     (conversation_id,)
                 )
+                self.logger.debug('TwitterHttpError: {0}'.format(err))
+                if ' 403 ' not in str(err):
+                    time.sleep(3)
                 continue
-            except sqlite3.IntegrityError as err:
+            except sqlite3.IntegrityError:
                 print('skip this conversation')
                 continue
         self.conn.close()
